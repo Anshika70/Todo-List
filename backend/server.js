@@ -1,56 +1,64 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
 const app = express();
 const PORT = 5000;
-const FILE_PATH = path.join(__dirname, 'tasks.json');
 
+// Middleware setup
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors()); // Enable CORS if frontend and backend are on different ports
+app.use(cors());
 
-const readTasks = () => {
-  try {
-    if (!fs.existsSync(FILE_PATH)) {
-      fs.writeFileSync(FILE_PATH, JSON.stringify([]));
-    }
-    return JSON.parse(fs.readFileSync(FILE_PATH));
-  } catch (error) {
-    console.error('Error reading tasks:', error);
-    throw new Error('Error reading tasks');
-  }
-};
+// MongoDB connection
+mongoose.connect('mongodb://localhost:27017/todoList', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
-const writeTasks = (tasks) => {
-  try {
-    fs.writeFileSync(FILE_PATH, JSON.stringify(tasks, null, 2));
-  } catch (error) {
-    console.error('Error writing tasks:', error);
-    throw new Error('Error writing tasks');
-  }
-};
+// Access the MongoDB connection instance
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => {
+  console.log('Connected to MongoDB');
+});
 
-app.get('/tasks', (req, res) => {
-  console.log('Fetching tasks');
+// Define a Task schema and model
+const taskSchema = new mongoose.Schema({
+  title: String,
+  description: String,
+  lastUpdated: Date,
+  completed: Boolean,
+});
+
+
+ // Creating a Mongoose model for the Task schema
+const Task = mongoose.model('Task', taskSchema);
+
+// GET endpoint to fetch all tasks
+app.get('/tasks', async (req, res) => {
   try {
-    res.json(readTasks());
+    const tasks = await Task.find({});
+    res.json(tasks);
   } catch (error) {
+    console.error('Error fetching tasks:', error);
     res.status(500).json({ message: 'Error fetching tasks' });
   }
 });
 
-app.post('/tasks', (req, res) => {
-  console.log('Received POST request:', req.body);
+// POST endpoint to add a new task
+app.post('/tasks', async (req, res) => {
   try {
     const { title, description, lastUpdated } = req.body;
-    const tasks = readTasks();
-    const newTask = { id: Date.now(), title, description, lastUpdated, completed: false };
-    tasks.push(newTask);
-    writeTasks(tasks);
-    console.log('New task added:', newTask);
+    const newTask = new Task({
+      title,
+      description,
+      lastUpdated: lastUpdated || new Date(),
+      completed: false,
+    });
+
+    await newTask.save();
     res.status(201).json(newTask);
   } catch (error) {
     console.error('Error adding task:', error);
@@ -58,18 +66,20 @@ app.post('/tasks', (req, res) => {
   }
 });
 
-app.put('/tasks/:id', (req, res) => {
-  console.log('Received PUT request:', req.params.id, req.body);
+// PUT endpoint to update a task
+app.put('/tasks/:id', async (req, res) => {
   try {
-    const taskId = parseInt(req.params.id, 10);
+    const { id } = req.params;
     const { title, description, lastUpdated, completed } = req.body;
-    const tasks = readTasks();
-    const taskIndex = tasks.findIndex(task => task.id === taskId);
-    if (taskIndex !== -1) {
-      tasks[taskIndex] = { id: taskId, title, description, lastUpdated, completed };
-      writeTasks(tasks);
-      console.log('Task updated:', tasks[taskIndex]);
-      res.json(tasks[taskIndex]);
+
+    const updatedTask = await Task.findByIdAndUpdate(
+      id,
+      { title, description, lastUpdated: lastUpdated || new Date(), completed },
+      { new: true }
+    );
+
+    if (updatedTask) {
+      res.json(updatedTask);
     } else {
       res.status(404).json({ message: 'Task not found' });
     }
@@ -79,21 +89,25 @@ app.put('/tasks/:id', (req, res) => {
   }
 });
 
-app.delete('/tasks/:id', (req, res) => {
-  console.log('Received DELETE request:', req.params.id);
+// DELETE endpoint to delete a task
+app.delete('/tasks/:id', async (req, res) => {
   try {
-    const taskId = parseInt(req.params.id, 10);
-    let tasks = readTasks();
-    tasks = tasks.filter(task => task.id !== taskId);
-    writeTasks(tasks);
-    console.log('Task deleted');
-    res.status(204).end();
+    const { id } = req.params;
+
+    const deletedTask = await Task.findByIdAndDelete(id);
+
+    if (deletedTask) {
+      res.status(204).end();
+    } else {
+      res.status(404).json({ message: 'Task not found' });
+    }
   } catch (error) {
     console.error('Error deleting task:', error);
     res.status(500).json({ message: 'Error deleting task' });
   }
 });
 
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

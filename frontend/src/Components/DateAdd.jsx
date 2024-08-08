@@ -2,14 +2,16 @@ import { useState } from "react";
 import style from "./DateAdd.module.css";
 
 function DateAdd({ addTask }) {
+  // State to manage the current task title input by the user
   const [taskTitle, setTaskTitle] = useState("");
 
+  // Function to handle adding a new task when the user clicks the "Add Item" button
   const handleAddTask = () => {
     if (taskTitle.trim()) {
-      fetch('http://localhost:5000/tasks', {
-        method: 'POST',
+      fetch("http://localhost:5000/tasks", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           title: taskTitle,
@@ -17,22 +19,17 @@ function DateAdd({ addTask }) {
           lastUpdated: new Date(),
         }),
       })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(newTask => {
-        addTask(newTask); // Assuming addTask updates the local state
-        setTaskTitle("");
-      })
-      .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-      });
+        .then((response) => response.json())
+        .then((newTask) => {
+          console.log("Task added:", newTask);
+          addTask(newTask);
+          setTaskTitle("");
+        })
+        .catch((error) => console.error("Error adding task:", error));
     }
   };
 
+  // Get today's date and day of the week in a human-readable format
   const today = new Date();
   const day = today.toLocaleString("default", { weekday: "long" });
   const date = today.toLocaleDateString("en-GB", {
