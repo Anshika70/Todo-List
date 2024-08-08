@@ -1,0 +1,60 @@
+
+.header {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 70%;
+    z-index: 1;
+}
+.inputcontainer {
+    display: flex;
+    align-items: center;
+    margin-left: auto; /* Push the input container to the right */
+}
+
+.header input{
+    background-color: #000000;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 15px;
+    margin-right: 10px; /* Add some space between input and button */
+}
+.date {
+    color: rgb(0, 0, 0); /* Adjust color as needed */
+}
+
+.addButton {
+    
+    padding: 10px 20px;
+    background-color: #000000;
+    color: rgba(255, 255, 255, 0.858);
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .addButton {
+      padding: 10px;
+       /* Adjust padding for the icon */
+    }
+  
+    .addButton::before {
+      content: "\f067"; /* Font Awesome unicode for the plus icon */
+      font-family: "Font Awesome 5 Free"; /* Ensure the font-family is correct */
+      font-weight: 900; /* Font Awesome icons are bold */
+      
+    }
+  
+    .addButton span {
+      display: none; /* Hide the text inside the button */
+    }
+    .header input{
+        width: 40%;
+    }
+  }
+.addButton:hover {
+    background-color: #000000c4;
+}

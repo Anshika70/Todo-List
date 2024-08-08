@@ -1,0 +1,72 @@
+
+.task {
+    background-color: #070707b8;
+    margin: 10px auto;
+    padding: 15px;
+    width: 75%;
+    border-radius: 20px;
+    color: white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .task.completed {
+    text-decoration: line-through;
+    background-color: #555;
+  }
+  
+  .task input,
+  .task textarea {
+    width: 100%;
+    margin-top: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+  }
+  
+  .task .taskcontent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .task .taskcontent .left {
+    flex: 1;
+  }
+  
+  .task .taskcontent .right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .task .taskcontent .right i,
+  .task .taskcontent .right input[type="checkbox"] {
+    cursor: pointer;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 10px;
+  }
+  
+  .task .taskcontent .right input[type="checkbox"] {
+    margin-left: 10px;
+  }
+  
+  .task .taskcontent .right i:hover,
+  .task .taskcontent .right input[type="checkbox"]:hover {
+    background-color: #333;
+  }
+  
+  .task .lastUpdated {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 12px;
+    color: #ccc;
+  }
+  

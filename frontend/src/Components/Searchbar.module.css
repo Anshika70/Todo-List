@@ -1,0 +1,16 @@
+.header{
+    width: 80%;
+  display: flex;
+  justify-content: center;
+  margin: 10px;
+  z-index:1;
+}
+.search{
+    padding: 13px;
+  background-color:#000000e0;
+  border-radius: 25px;
+  border: none;
+  width: 100%;
+  color:white;
+  
+}
