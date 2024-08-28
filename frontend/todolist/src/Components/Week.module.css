@@ -1,0 +1,38 @@
+
+.weekRow {
+    width: 70%;
+    display: flex;
+    overflow-x: auto;
+    margin-top: 20px;
+    padding: 10px 0;
+    white-space: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    scrollbar-width: none;
+}
+.weekRow::-webkit-scrollbar {
+    display: none;
+  }
+.circle {
+    width: 50px;
+    height: 50px;
+    background-color: black;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 5px;
+    font-size: 14px;
+    flex-shrink: 0; 
+    cursor: pointer;
+}
+.circle :hover{
+    background-color: red;
+    color: white;
+}
+.selected {
+    background-color: #fff; 
+    color: #000;
+  }
+  
